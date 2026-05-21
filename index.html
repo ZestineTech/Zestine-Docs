@@ -713,6 +713,7 @@ kbd {
     <div class="nav-group">
         <div class="nav-group-title">Reference</div>
         <a class="nav-link" href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a>
+        <a class="nav-link" href="#login-flow"><i class="fas fa-sign-in-alt"></i> Login Flow</a>
         <a class="nav-link" href="#changelog"><i class="fas fa-history"></i> Changelog</a>
         <a class="nav-link" href="#support"><i class="fas fa-life-ring"></i> Support</a>
     </div>
@@ -1177,6 +1178,312 @@ kbd {
     <i class="fas fa-exclamation-triangle"></i>
     <p><strong>Crash Recovery:</strong> If Revit crashes while ZeManage is active, all unsynchronized data is preserved in the local database. On next launch, the offline queue will automatically process pending operations.</p>
 </div>
+</section>
+
+<!-- ==================== LOGIN FLOW ==================== -->
+<section class="fade-section" id="login-flow">
+<div class="section-header">
+    <div class="section-icon"><i class="fas fa-sign-in-alt"></i></div>
+    <h2>Login Flow Guide</h2>
+</div>
+
+<p>End-to-end reference for how authentication works in the ZeManage Revit plugin: ribbon click &rarr; API call &rarr; token storage &rarr; ribbon update, including token refresh, logout, the two-token model (device vs admin), and failure paths.</p>
+
+<h3><i class="fas fa-project-diagram"></i> High-Level Flow Diagram</h3>
+
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copy</button>
+    <code>[Revit Ribbon: "Sign In" button]
+        &darr;
+SignInCommand.Execute()           &mdash;&mdash; pulls auth services from DI
+        &darr;
+SignInDialog (WPF window)         &mdash;&mdash; owned by Revit main window
+        &darr;
+SignInViewModel                   &mdash;&mdash; if already authenticated, restore from disk
+        &darr;
+User types email + password &rarr; SignInAsync()
+        &darr;
+AuthApiService.AdminLoginAsync(machineId, sessionId, email, password)
+        &darr;
+POST {ApiBaseUrl}/api/v1/tenant/device/auth/admin-login
+        &darr;
+LoginResponse { accessToken, refreshToken, roleName, profileId, ... }
+        &darr;
+AuthTokenManager.SetTokensFromLogin()
+   &bull; access token &rarr; memory (admin slot)
+   &bull; refresh token &rarr; %APPDATA%\BIManage\auth.dat (DPAPI)
+   &bull; _isAdminSession = true
+        &darr;
+Build UserIdentity &rarr; UserService.SetCurrentUser()
+        &darr;
+SecureTokenStorage.SaveUserIdentity() &rarr; %APPDATA%\BIManage\identity.dat (DPAPI)
+        &darr;
+ViewModel.IsAuthenticated = true &rarr; dialog swaps to "signed-in" view
+        &darr;
+SignInCommand &rarr; RibbonVisibilityManager.UpdateAllButtonVisibility()
+        &darr;
+   &#x2713; Logged in. Subsequent API calls use AuthenticatedHttpClient
+     which attaches Bearer token and auto-refreshes on 401.</code>
+</div>
+
+<h3><i class="fas fa-list-ol"></i> Step-by-Step</h3>
+
+<h4>1. Entry &mdash; Ribbon click</h4>
+<p>Ribbon button registered in <code>Application.cs:3060</code>. Triggers <code>SignInCommand</code> (an <code>IExternalCommand</code>).</p>
+
+<h4>2. Command pulls services from DI</h4>
+<p><code>SignInCommand.cs:19-89</code> resolves from <code>ServiceRegistry</code>: <code>AuthApiService</code>, <code>AuthTokenManager</code>, <code>IUserService</code>, <code>SecureTokenStorage</code>, <code>SessionSyncService</code>, <code>IRevitContext</code>, <code>ILogger</code>. If any are missing &rarr; TaskDialog "Authentication services not available", abort.</p>
+
+<h4>3. Show SignInDialog</h4>
+<p><code>SignInDialog.xaml.cs</code> &mdash; borderless modal, owned by Revit main window. Constructs <code>SignInViewModel</code> with the services from step 2.</p>
+
+<h4>4. ViewModel init &mdash; restore prior session if any</h4>
+<p><code>SignInViewModel.cs:104-126</code>. If <code>IUserService.IsAuthenticated</code>, repopulate <code>AuthenticatedUser</code>, <code>Email</code>, <code>CompanyDisplay</code>, <code>RoleDisplay</code> from <code>SecureTokenStorage</code> &mdash; user lands directly on "signed-in" view, no re-login needed.</p>
+
+<h4>5. User enters credentials, clicks Sign In</h4>
+<p>Email + password fields with placeholder + show/hide toggle.</p>
+
+<h4>6. Validate and call API</h4>
+<p><code>SignInViewModel.SignInAsync()</code>. Validates: email non-empty, valid format, password non-empty. Gets <code>machineId</code> via <code>MachineIdentifier.GetMachineId()</code> + session ID from <code>IRevitContext</code>. Calls <code>_authApi.AdminLoginAsync(machineId, sessionId, email, password)</code>.</p>
+
+<h4>7. HTTP POST</h4>
+<p><code>AuthApiService.cs:304-328</code>. <code>POST {ApiBaseUrl}/api/v1/tenant/device/auth/admin-login</code> with body <code>{ machineId, sessionId, username, password }</code>. <code>ApiBaseUrl</code> = <code>https://api.zemanage.com</code> (from <code>App.config</code>).</p>
+
+<h4>8. Token storage on success</h4>
+<p><code>AuthTokenManager.SetTokensFromLogin()</code>:</p>
+<ul>
+    <li><strong>Access token</strong> &rarr; memory only (<code>_adminAccessToken</code>, expires per <code>tokenExpiry</code> or +1h)</li>
+    <li><strong>Refresh token</strong> &rarr; DPAPI-encrypted file <code>%APPDATA%\BIManage\auth.dat</code></li>
+    <li>Sets <code>_isAdminSession = true</code> so future refreshes hit <code>/admin-refresh</code> (not <code>/refresh</code>)</li>
+    <li>Two parallel token slots exist: <strong>admin</strong> (has <code>profileId</code>, for writes) vs <strong>device</strong> (heartbeats); admin wins when both present</li>
+</ul>
+
+<h4>9. Identity persisted</h4>
+<p>Parses <code>roleName</code> &rarr; <code>IsCompanyAdmin</code> / <code>IsProjectAdmin</code> flags. Builds <code>UserIdentity</code> (userId, email, companyId, profileId, role flags, admin token). <code>_userService.SetCurrentUser(identity)</code> &mdash; in-memory. <code>_secureStorage.SaveUserIdentity(...)</code> &mdash; DPAPI-encrypted to <code>%APPDATA%\BIManage\identity.dat</code>.</p>
+
+<h4>10. UI swaps to signed-in view</h4>
+<p>Hides form panel, shows signed-in panel with role badge:</p>
+<ul>
+    <li><strong>C</strong> Company Admin &mdash; "Full access across all projects"</li>
+    <li><strong>P</strong> Project Admin &mdash; "Manage assigned projects"</li>
+    <li><strong>U</strong> User &mdash; "Standard access with protections"</li>
+</ul>
+
+<h4>11. Ribbon refresh</h4>
+<p>On <code>dialog.Success == true</code>, calls <code>RibbonVisibilityManager.UpdateAllButtonVisibility()</code> to reveal admin-only buttons per role flags.</p>
+
+<h3><i class="fas fa-rocket"></i> Bootstrap (happens once at Revit startup, before any login)</h3>
+
+<p><code>RevitBootstrapper.cs:741-781</code>:</p>
+<ul>
+    <li>Creates and registers as singletons: <code>SecureTokenStorage</code>, <code>AuthApiService</code>, <code>AuthTokenManager</code>, <code>AuthenticatedHttpClient</code></li>
+    <li>If <code>identity.dat</code> exists and contains a <code>ProfileId</code>, calls <code>tokenManager.RestoreAdminSessionFlag(true)</code> &mdash; ensures refresh routes to <code>/admin-refresh</code> even before first user action</li>
+</ul>
+
+<h3><i class="fas fa-sync-alt"></i> How subsequent API calls stay authenticated</h3>
+
+<p><code>AuthenticatedHttpClient.SendWithAuthAsync()</code>:</p>
+<ol>
+    <li>Pull current token via <code>tokenManager.GetAccessTokenAsync()</code></li>
+    <li>Attach <code>Authorization: Bearer &lt;token&gt;</code></li>
+    <li>If response is 401:
+        <ul>
+            <li>Force-expire in-memory token</li>
+            <li>Call <code>GetAccessTokenAsync()</code> again &rarr; triggers refresh against <code>/admin-refresh</code></li>
+            <li>Retry the request <strong>once</strong></li>
+        </ul>
+    </li>
+    <li>If retry also 401 &rarr; fire <code>AuthExhausted</code> event &rarr; user must re-login</li>
+</ol>
+
+<p><strong>Refresh internals:</strong> <code>AuthTokenManager.RefreshAccessTokenAsync()</code> &mdash; on 400/401/403 throws <code>TokenRejectedException</code> and <strong>wipes</strong> the stored refresh token (it's revoked); on network errors keeps the refresh token for retry.</p>
+
+<h3><i class="fas fa-sign-out-alt"></i> Logout</h3>
+
+<p><code>SignInViewModel.SignOut()</code>:</p>
+<ol>
+    <li>Fire-and-forget <code>POST /api/v1/tenant/device/auth/admin-logout</code> with sessionId + admin token (server-side revoke)</li>
+    <li><code>tokenManager.ClearTokens()</code> &mdash; wipes both memory slots + deletes <code>auth.dat</code></li>
+    <li><code>secureStorage.ClearUserIdentity()</code> &mdash; deletes <code>identity.dat</code></li>
+    <li><code>userService.Logout()</code> + <code>UserDisplayNameCache.Clear()</code></li>
+    <li>ViewModel flips back to form view</li>
+</ol>
+
+<h3><i class="fas fa-power-off"></i> Auto-logout triggers</h3>
+
+<table>
+    <tr><th>Event</th><th>Trigger</th><th>Result</th></tr>
+    <tr>
+        <td><code>TokenRejected</code></td>
+        <td>Refresh returns 400/401/403 (token revoked)</td>
+        <td>Wipe identity, message "Your admin session has expired. Please sign in again."</td>
+    </tr>
+    <tr>
+        <td><code>AuthExhausted</code></td>
+        <td>401 with no stored refresh token (throttled to 1/2min)</td>
+        <td>Wipe all tokens, prompt re-login</td>
+    </tr>
+</table>
+
+<h3><i class="fas fa-exclamation-triangle"></i> Failure paths during login</h3>
+
+<table>
+    <tr><th>HTTP / cause</th><th>Message shown</th></tr>
+    <tr><td>401</td><td>"Invalid email or password."</td></tr>
+    <tr><td>403</td><td>"Access denied. Your account may be restricted."</td></tr>
+    <tr><td>404</td><td>"Service not available. Please contact your administrator."</td></tr>
+    <tr><td>5xx</td><td>"Server is temporarily unavailable. Please try again later."</td></tr>
+    <tr><td>Timeout (<code>TaskCanceledException</code>)</td><td>"Connection timed out. Please check your network and try again."</td></tr>
+    <tr><td>DNS/refused (<code>HttpRequestException</code>)</td><td>"Unable to reach the server. Please check your network connection."</td></tr>
+</table>
+
+<h3><i class="fas fa-cog"></i> Config keys (<code>App.config</code>)</h3>
+
+<table>
+    <tr><th>Key</th><th>Value</th><th>Used by</th></tr>
+    <tr><td><code>ApiBaseUrl</code></td><td><code>https://api.zemanage.com</code></td><td>All REST calls</td></tr>
+    <tr><td><code>LoginUrl</code></td><td><code>https://zemanage.com/login</code></td><td>Frontend login URL</td></tr>
+    <tr><td><code>SignalR:HubUrl</code></td><td><code>https://api.zemanage.com/hubs/notifications</code></td><td>Real-time notifications</td></tr>
+</table>
+
+<h3><i class="fas fa-hdd"></i> Persisted files</h3>
+
+<table>
+    <tr><th>File</th><th>Contents</th><th>Encryption</th></tr>
+    <tr><td><code>%APPDATA%\BIManage\auth.dat</code></td><td>Refresh token</td><td>DPAPI (CurrentUser)</td></tr>
+    <tr><td><code>%APPDATA%\BIManage\identity.dat</code></td><td><code>StoredUserIdentity</code> JSON (userId, email, company, role, profileId)</td><td>DPAPI (CurrentUser)</td></tr>
+</table>
+
+<div class="callout callout-info">
+    <i class="fas fa-info-circle"></i>
+    <p>Access tokens are <strong>never</strong> written to disk &mdash; memory only. Only the refresh token persists across Revit restarts.</p>
+</div>
+
+<h3><i class="fas fa-key"></i> Device Token vs User (Admin) Token &mdash; When Each Is Obtained</h3>
+
+<p>The app maintains <strong>two parallel token slots</strong> in <code>AuthTokenManager.cs:24-33</code>:</p>
+
+<table>
+    <tr><th>Slot</th><th>Field</th><th>Source endpoint</th><th>Has <code>profileId</code>?</th><th>Used for</th></tr>
+    <tr>
+        <td><strong>Device</strong></td>
+        <td><code>_deviceAccessToken</code> / <code>_deviceExpiresAt</code></td>
+        <td><code>POST /validate-device</code> (machineId only, no password)</td>
+        <td>No</td>
+        <td>Heartbeats, session sync, read-only metrics</td>
+    </tr>
+    <tr>
+        <td><strong>Admin</strong></td>
+        <td><code>_adminAccessToken</code> / <code>_adminExpiresAt</code></td>
+        <td><code>POST /admin-login</code> (email + password)</td>
+        <td>Yes</td>
+        <td>Protection writes, command/event/rule changes</td>
+    </tr>
+</table>
+
+<p><code>_isAdminSession</code> flag routes refresh: <code>true</code> &rarr; <code>/admin-refresh</code>, <code>false</code> &rarr; <code>/device/auth/refresh</code>.</p>
+
+<h4>Timeline &mdash; when each token is obtained</h4>
+
+<div class="code-block">
+    <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copy</button>
+    <code>T0  Revit launches
+     |
+T1  RevitBootstrapper.Initialize() runs (logging, core, identity, persistence)
+     |   -- no auth yet
+     |
+T2  RegisterApiServices() phase
+     |   -- SecureTokenStorage created -> loads persisted refresh token + identity.dat
+     |   -- AuthApiService, AuthTokenManager, AuthenticatedHttpClient registered
+     |   -- If identity.dat had ProfileId -> RestoreAdminSessionFlag(true)
+     |      (routes future refresh to /admin-refresh)
+     |
+T3  AutoAuthenticateDeviceAsync() fires (background, 5s timeout, non-blocking)
+     |   [RevitBootstrapper.cs:1486-1555]
+     |   |
+     |   +-- Step A: Try stored refresh token
+     |   |     GetAccessTokenAsync() -> if admin flag set: /admin-refresh,
+     |   |     else: /device/auth/refresh -> populates the matching slot.
+     |   |
+     |   +-- Step B: If no stored token, call ValidateDeviceAsync(machineId)
+     |   |     POST /validate-device  body: { "machineId": "..." }
+     |   |     SetTokensFromDevice() [AuthTokenManager.cs:186-211]
+     |   |       - _deviceAccessToken / _deviceExpiresAt populated
+     |   |       - device refresh token persisted ONLY if no admin session
+     |   |
+     |   +-- Step C: If validation fails -> red device-status icon, no dialog
+     |
+T4  SignalR connects using GetAccessTokenAsync() as bearer source
+     |   -- prefers admin if _isAdminSession, else device
+     |
+T5  SessionSyncService heartbeat starts (uses device token)
+     |
+===================================================================
+T6  User clicks Sign In on ribbon <-- ADMIN TOKEN ONLY OBTAINED HERE
+     |   SignInViewModel.SignInAsync()
+     |   AuthApiService.AdminLoginAsync(machineId, sessionId, email, password)
+     |   POST /admin-login
+     |   ->
+     |   SetTokensFromLogin() [AuthTokenManager.cs:162-176]
+     |     - _adminAccessToken / _adminExpiresAt populated
+     |     - _isAdminSession = true
+     |     - refresh token (admin) persisted to auth.dat
+     |     - DEVICE slot is NOT touched -- both tokens now coexist
+     |
+T7  Subsequent API requests
+     |   -- AuthenticatedHttpClient picks the right slot per requireAdminToken flag
+     |      - admin-scoped writes -> GetAdminAccessTokenAsync()
+     |      - device-scoped heartbeats -> GetDeviceAccessTokenAsync()
+     |   -- On 401, force-expire that slot, refresh from matching endpoint, retry once
+===================================================================</code>
+</div>
+
+<h4>Key timing facts</h4>
+
+<ol>
+    <li><strong>Device token is obtained automatically at startup</strong> &mdash; no user action required. Just needs <code>machineId</code> (no password).</li>
+    <li><strong>Admin token is obtained ONLY when the user manually clicks Sign In.</strong> It is never fetched on startup, even if <code>identity.dat</code> exists &mdash; the <strong>refresh token</strong> persisted there is used to renew the admin access token, but the access token itself lives only in memory and is re-minted on demand.</li>
+    <li><strong>Both tokens can be held simultaneously.</strong> Signing in does NOT replace the device token; it adds the admin token alongside it.</li>
+    <li><strong>Logout</strong> clears both slots and both <code>.dat</code> files. <strong>Demoting an admin</strong> clears only the admin slot via <code>ClearAdminTokens()</code>.</li>
+</ol>
+
+<h4>Why two tokens?</h4>
+
+<ul>
+    <li>Server enforces that admin-scoped writes (protections, rules, audit logs) require a token with the <code>profileId</code> claim &mdash; only <code>/admin-login</code> issues that.</li>
+    <li>Device endpoints (heartbeat, session sync, telemetry) only need machine identity &mdash; <code>/validate-device</code> issues a <code>profileId</code>-less token for that.</li>
+    <li>Keeping them separate means a device heartbeat won't consume/refresh the admin token, and admin sign-out doesn't kill device telemetry.</li>
+</ul>
+
+<h3><i class="fas fa-folder-open"></i> Key files (jump points)</h3>
+
+<table>
+    <tr><th>Purpose</th><th>File</th></tr>
+    <tr><td>Entry</td><td><code>BIManage/Commands/RibbonCommands/SignInCommand.cs</code></td></tr>
+    <tr><td>UI</td><td><code>BIManage/Views/Auth/SignInDialog.xaml(.cs)</code></td></tr>
+    <tr><td>ViewModel</td><td><code>BIManage/ViewModels/Auth/SignInViewModel.cs</code></td></tr>
+    <tr><td>HTTP</td><td><code>BIManage/Infrastructure/Auth/AuthApiService.cs</code><br><code>BIManage/Infrastructure/Auth/AuthenticatedHttpClient.cs</code></td></tr>
+    <tr><td>Tokens</td><td><code>BIManage/Infrastructure/Auth/AuthTokenManager.cs</code><br><code>BIManage/Infrastructure/Auth/SecureTokenStorage.cs</code></td></tr>
+    <tr><td>DI wiring</td><td><code>BIManage/Revit/Applications/RevitBootstrapper.cs:741-890</code></td></tr>
+    <tr><td>Config</td><td><code>App.config</code></td></tr>
+</table>
+
+<h3><i class="fas fa-check-circle"></i> Verification &mdash; testing the flow live</h3>
+
+<ol>
+    <li>Start Revit, click the <strong>Sign In</strong> ribbon button &rarr; confirm <code>SignInDialog</code> opens</li>
+    <li>Enter valid credentials &rarr; confirm dialog swaps to "signed-in" view with role badge</li>
+    <li>Check <code>%APPDATA%\BIManage\</code> for <code>auth.dat</code> and <code>identity.dat</code> (should both exist after login)</li>
+    <li>Close and reopen Revit &rarr; click Sign In again &rarr; should show "signed-in" view directly (restored from <code>identity.dat</code>)</li>
+    <li>Click Sign Out &rarr; both <code>.dat</code> files should be deleted</li>
+    <li>Enter wrong password &rarr; confirm "Invalid email or password." message</li>
+</ol>
+
+<div class="callout callout-tip">
+    <i class="fas fa-lightbulb"></i>
+    <p><strong>Switching environments (e.g., staging &rarr; production):</strong> The local <code>.dat</code> files are issued by a specific server. If you change <code>ApiBaseUrl</code>, the old tokens will be rejected. Delete <code>%APPDATA%\BIManage\auth.dat</code> and <code>identity.dat</code>, then re-register the device and sign in fresh against the new environment.</p>
+</div>
+
 </section>
 
 <!-- ==================== CHANGELOG ==================== -->
