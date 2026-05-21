@@ -11,11 +11,11 @@
 <style>
 /* ===== CSS Variables & Reset ===== */
 :root {
-    --navy: #002a54;
-    --navy-light: #003d7a;
-    --navy-dark: #001a36;
-    --red: #fc424f;
-    --red-hover: #e5323f;
+    --navy: #000000;
+    --navy-light: #1a1a1a;
+    --navy-dark: #000000;
+    --red: #FF5500;
+    --red-hover: #CC4400;
     --green: #7eba00;
     --green-light: #e8f5d0;
     --bg: #f8fafc;
@@ -34,24 +34,6 @@
     --radius: 12px;
     --radius-sm: 8px;
     --transition: 0.2s ease;
-}
-
-/* Dark mode */
-[data-theme="dark"] {
-    --navy: #1a3a5c;
-    --navy-light: #234b73;
-    --navy-dark: #0d1f33;
-    --bg: #0f172a;
-    --bg-card: #1e293b;
-    --text: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border: #334155;
-    --border-light: #1e293b;
-    --code-bg: #1e293b;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -73,8 +55,9 @@ a:hover { color: var(--red); }
     left: 0;
     right: 0;
     height: var(--topbar-h);
-    background: var(--navy-dark);
-    color: white;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -94,21 +77,20 @@ a:hover { color: var(--red); }
     font-weight: 800;
     font-size: 18px;
     letter-spacing: -0.5px;
-    color: white;
+    color: #000000;
 }
 .topbar-logo .logo-icon {
     width: 32px;
     height: 32px;
     border-radius: 8px;
     object-fit: contain;
-    background: white;
-    padding: 3px;
 }
 .topbar-logo .logo-icon-text {
     display: none;
 }
 .topbar-version {
-    background: rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.06);
+    color: #000000;
     padding: 3px 10px;
     border-radius: 20px;
     font-size: 11px;
@@ -121,9 +103,9 @@ a:hover { color: var(--red); }
     gap: 12px;
 }
 .topbar-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: white;
+    background: rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #000000;
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 12px;
@@ -135,12 +117,12 @@ a:hover { color: var(--red); }
     gap: 6px;
     font-family: inherit;
 }
-.topbar-btn:hover { background: rgba(255,255,255,0.2); }
+.topbar-btn:hover { background: rgba(0,0,0,0.1); }
 .hamburger {
     display: none;
     background: none;
     border: none;
-    color: white;
+    color: #000000;
     font-size: 20px;
     cursor: pointer;
     padding: 4px;
@@ -153,8 +135,9 @@ a:hover { color: var(--red); }
     left: 0;
     width: var(--sidebar-w);
     height: calc(100vh - var(--topbar-h));
-    background: var(--navy);
-    color: white;
+    background: #ffffff;
+    color: #000000;
+    border-right: 1px solid var(--border);
     overflow-y: auto;
     z-index: 150;
     padding: 0 0 24px;
@@ -162,39 +145,39 @@ a:hover { color: var(--red); }
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
 
 .sidebar-search {
     padding: 16px 16px 8px;
     position: sticky;
     top: 0;
-    background: var(--navy);
+    background: #ffffff;
     z-index: 10;
 }
 .sidebar-search input {
     width: 100%;
     padding: 8px 12px 8px 34px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: 6px;
-    color: white;
+    color: #000000;
     font-size: 12px;
     font-family: inherit;
     outline: none;
     transition: all var(--transition);
 }
-.sidebar-search input::placeholder { color: rgba(255,255,255,0.4); }
+.sidebar-search input::placeholder { color: rgba(0,0,0,0.4); }
 .sidebar-search input:focus {
-    background: rgba(255,255,255,0.15);
-    border-color: rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.25);
 }
 .sidebar-search i {
     position: absolute;
     left: 28px;
     top: 25px;
     font-size: 12px;
-    color: rgba(255,255,255,0.4);
+    color: rgba(0,0,0,0.4);
 }
 
 .nav-group { padding: 12px 0 4px; }
@@ -203,7 +186,7 @@ a:hover { color: var(--red); }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.35);
+    color: rgba(0,0,0,0.45);
     padding: 0 20px;
     margin-bottom: 4px;
 }
@@ -213,19 +196,19 @@ a:hover { color: var(--red); }
     gap: 8px;
     padding: 7px 20px;
     font-size: 13px;
-    color: rgba(255,255,255,0.65);
+    color: rgba(0,0,0,0.7);
     transition: all 0.15s;
     cursor: pointer;
     border-left: 3px solid transparent;
 }
 .nav-link:hover {
-    background: rgba(255,255,255,0.06);
-    color: white;
+    background: rgba(0,0,0,0.04);
+    color: #000000;
     text-decoration: none;
 }
 .nav-link.active {
-    background: rgba(255,255,255,0.1);
-    color: white;
+    background: rgba(255,85,0,0.08);
+    color: #000000;
     border-left-color: var(--red);
     font-weight: 600;
 }
@@ -257,8 +240,9 @@ a:hover { color: var(--red); }
 
 /* ===== Hero ===== */
 .hero {
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
-    color: white;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 52px;
     margin-bottom: 40px;
@@ -301,8 +285,8 @@ a:hover { color: var(--red); }
 }
 .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
 .hero-badge {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.06);
+    color: #000000;
     padding: 5px 14px;
     border-radius: 20px;
     font-size: 11px;
@@ -311,7 +295,7 @@ a:hover { color: var(--red); }
     align-items: center;
     gap: 6px;
 }
-.hero-badge i { font-size: 10px; opacity: 0.8; }
+.hero-badge i { font-size: 10px; opacity: 0.7; }
 
 /* ===== Section Headers ===== */
 .section-header {
@@ -431,7 +415,6 @@ th {
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
-[data-theme="dark"] th { color: var(--text); }
 td {
     padding: 11px 16px;
     border-bottom: 1px solid var(--border);
@@ -519,9 +502,6 @@ code {
 .callout-tip i { color: var(--green); }
 .callout-warning { background: #fffbeb; border-left: 3px solid #f59e0b; }
 .callout-warning i { color: #f59e0b; }
-[data-theme="dark"] .callout-info { background: rgba(59,130,246,0.1); }
-[data-theme="dark"] .callout-tip { background: rgba(126,186,0,0.1); }
-[data-theme="dark"] .callout-warning { background: rgba(245,158,11,0.1); }
 
 /* ===== Keyboard Shortcut Badge ===== */
 kbd {
@@ -545,19 +525,17 @@ kbd {
     margin-bottom: 4px;
 }
 .steps li::before {
-    content: counter(step);
+    content: counter(step) ".";
     position: absolute;
     left: 0;
     top: 10px;
     width: 30px;
     height: 30px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-light));
-    color: white;
-    border-radius: 50%;
+    color: #000000;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -601,7 +579,6 @@ kbd {
 }
 .footer p { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 .footer a { color: var(--navy); font-weight: 600; }
-[data-theme="dark"] .footer a { color: var(--text); }
 .footer-links {
     display: flex;
     justify-content: center;
@@ -670,12 +647,11 @@ kbd {
     <div class="topbar-left">
         <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
         <a href="#overview" class="topbar-logo">
-            <img class="logo-icon" src="ZeManage.png" alt="ZeManage"/>
-            <span>ZeManage</span>
+            <img class="logo-icon" src="ZeManage.png" alt="Ze'Manage"/>
+            <span><span style="color:#FF5500;">Ze'</span><span style="color:#000000;">Manage</span></span>
         </a>
     </div>
     <div class="topbar-right">
-        <button class="topbar-btn" id="darkModeToggle" title="Toggle dark mode"><i class="fas fa-moon"></i><span class="dm-label">Dark</span></button>
     </div>
 </header>
 
@@ -727,8 +703,8 @@ kbd {
 <div class="hero">
     <div class="hero-content">
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
-            <img src="ZeManage.png" alt="ZeManage" style="width:56px;height:56px;border-radius:14px;background:white;padding:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
-            <h1 style="margin:0;">ZeManage for Revit</h1>
+            <img src="ZeManage.png" alt="Ze'Manage" style="width:56px;height:56px;border-radius:14px;">
+            <h1 style="margin:0;"><span style="color:#FF5500;">Ze'</span><span style="color:#000000;">Manage</span> for Revit</h1>
         </div>
         <p class="hero-subtitle">Enterprise BIM governance plugin — model protection, real-time monitoring, AI-powered analysis, and cloud synchronization for Autodesk Revit 2021&ndash;2026.</p>
         <div class="hero-badges">
@@ -753,7 +729,7 @@ kbd {
     </a>
     <a href="#ai" class="feature-card" style="text-decoration:none;color:inherit;">
         <h4><i class="fas fa-robot"></i> AI Assistant</h4>
-        <p>ZedAI chat for BIM workflows, model-context questions, and best practice guidance.</p>
+        <p>Ze AI chat for BIM workflows, model-context questions, and best practice guidance.</p>
     </a>
     <a href="#activity" class="feature-card" style="text-decoration:none;color:inherit;">
         <h4><i class="fas fa-chart-line"></i> Activity Tracker</h4>
@@ -1025,15 +1001,15 @@ kbd {
 <section class="fade-section" id="ai">
 <div class="section-header">
     <div class="section-icon"><i class="fas fa-robot"></i></div>
-    <h2>AI Assistant (ZedAI)</h2>
+    <h2>AI Assistant (Ze AI)</h2>
 </div>
 
-<p>ZedAI is an AI-powered chat assistant integrated directly into the Revit environment. It provides intelligent guidance for BIM workflows, model analysis, and Revit best practices.</p>
+<p>Ze AI is an AI-powered chat assistant integrated directly into the Revit environment. It provides intelligent guidance for BIM workflows, model analysis, and Revit best practices.</p>
 
 <div class="features">
     <div class="feature-card">
         <h4><i class="fas fa-comments"></i> Contextual Chat</h4>
-        <p>Ask questions about Revit commands, BIM workflows, and modeling best practices. ZedAI understands your current model context.</p>
+        <p>Ask questions about Revit commands, BIM workflows, and modeling best practices. Ze AI understands your current model context.</p>
     </div>
     <div class="feature-card">
         <h4><i class="fas fa-lightbulb"></i> Smart Suggestions</h4>
@@ -1498,7 +1474,7 @@ T7  Subsequent API requests
 <h3>v2025.1 <span class="mode mode-blue">Latest</span></h3>
 <ul>
     <li>Added Revit 2026 support (.NET 8.0)</li>
-    <li>Introduced ZedAI chat assistant</li>
+    <li>Introduced Ze AI chat assistant</li>
     <li>Session role-swap for administrators</li>
     <li>Enhanced Health Monitor with Project Complexity Score</li>
     <li>SignalR migration to ASP.NET Core client</li>
@@ -1650,33 +1626,6 @@ T7  Subsequent API requests
     }, { passive: true });
     backToTop.addEventListener('click', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // ===== Dark mode toggle =====
-    var darkToggle = document.getElementById('darkModeToggle');
-    var dmIcon = darkToggle.querySelector('i');
-    var dmLabel = darkToggle.querySelector('.dm-label');
-
-    function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        if (theme === 'dark') {
-            dmIcon.className = 'fas fa-sun';
-            dmLabel.textContent = 'Light';
-        } else {
-            dmIcon.className = 'fas fa-moon';
-            dmLabel.textContent = 'Dark';
-        }
-        try { localStorage.setItem('zemanage-docs-theme', theme); } catch(e) {}
-    }
-
-    // Load saved theme
-    var savedTheme = null;
-    try { savedTheme = localStorage.getItem('zemanage-docs-theme'); } catch(e) {}
-    if (savedTheme) setTheme(savedTheme);
-
-    darkToggle.addEventListener('click', function() {
-        var current = document.documentElement.getAttribute('data-theme');
-        setTheme(current === 'dark' ? 'light' : 'dark');
     });
 
     // ===== Scroll fade-in animation =====
