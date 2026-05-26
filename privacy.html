@@ -51,10 +51,11 @@ a:hover{color:var(--lime-400);border-bottom-color:var(--lime-400);}
 .sidebar::-webkit-scrollbar{width:6px;}
 .sidebar::-webkit-scrollbar-thumb{background:rgba(183,255,60,0.25);border-radius:6px;}
 
-.sidebar-brand{padding:0 22px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;}
-.sidebar-brand svg{flex-shrink:0;}
-.sidebar-brand .brand-text h2{font-size:17px;font-weight:800;letter-spacing:-0.4px;color:#fff;}
-.sidebar-brand .brand-text p{font-size:10.5px;color:var(--muted);margin-top:2px;letter-spacing:0.3px;}
+.sidebar-brand{padding:6px 22px 22px;border-bottom:1px solid var(--line);}
+.sidebar-brand .brand-lockup-sm{
+  display:block;width:100%;max-width:236px;height:auto;
+  /* PNG already has a near-white wordmark; render on dark sidebar as-is. */
+}
 
 .nav-group{padding:16px 0;}
 .nav-group-title{
@@ -101,10 +102,11 @@ a:hover{color:var(--lime-400);border-bottom-color:var(--lime-400);}
 }
 .hero-inner{position:relative;z-index:1;}
 
-.hero-logo{display:flex;align-items:center;justify-content:center;gap:22px;margin-bottom:32px;}
-.hero-logo .word{
-  font-weight:800;font-size:54px;letter-spacing:-1.5px;color:#fff;
-  font-family:'Inter',sans-serif;line-height:1;
+.hero-logo{display:flex;align-items:center;justify-content:center;margin-bottom:36px;}
+.hero-logo .brand-lockup-lg{
+  display:block;width:100%;max-width:640px;height:auto;
+  /* Glow halo behind the wordmark to lift it off the dark hero. */
+  filter:drop-shadow(0 0 22px rgba(183,255,60,0.18));
 }
 
 .eyebrow{
@@ -214,9 +216,8 @@ strong{color:#fff;font-weight:700;}
   .sidebar{position:relative;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line);}
   .main{margin-left:0;padding:28px 22px;}
   .hero{padding:40px 24px;}
-  .hero-logo{gap:14px;margin-bottom:24px;}
-  .hero-logo .word{font-size:34px;}
-  .hero-logo svg{width:54px;height:54px;}
+  .hero-logo{margin-bottom:24px;}
+  .hero-logo .brand-lockup-lg{max-width:88%;}
   .hero h1{font-size:26px;}
   .facts dl{grid-template-columns:1fr;}
   .facts dt{margin-top:4px;}
@@ -225,24 +226,12 @@ strong{color:#fff;font-weight:700;}
 </head>
 <body>
 
-<!-- ─────────── Reusable inline ZestineTech mark (lime "N" silhouette) ─────────── -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="zt-mark" viewBox="0 0 100 100">
-      <!-- Geometric "N" formed by two interlocking shapes -->
-      <path d="M10 8 L40 8 L40 50 L72 8 L92 8 L92 92 L62 92 L62 50 L30 92 L10 92 Z" fill="#B7FF3C"/>
-    </symbol>
-  </defs>
-</svg>
-
 <!-- ─────────── Sidebar ─────────── -->
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <svg width="40" height="40"><use href="#zt-mark"/></svg>
-    <div class="brand-text">
-      <h2>ZestineTech</h2>
-      <p>Intelligent engineering operations</p>
-    </div>
+    <!-- Full ZestineTech lockup (mark + wordmark) — transparent PNG renders
+         crisply on the near-black sidebar. -->
+    <img src="zestinetech-logo.png" alt="ZestineTech" class="brand-lockup-sm"/>
   </div>
   <nav class="nav-group">
     <div class="nav-group-title">Policy</div>
@@ -270,8 +259,9 @@ strong{color:#fff;font-weight:700;}
   <section class="hero" id="overview">
     <div class="hero-inner">
       <div class="hero-logo">
-        <svg width="78" height="78"><use href="#zt-mark"/></svg>
-        <span class="word">ZestineTech</span>
+        <!-- Full ZestineTech lockup at brand-plate scale — fills the hero
+             the way the corporate logo plate is meant to be presented. -->
+        <img src="zestinetech-logo.png" alt="ZestineTech" class="brand-lockup-lg"/>
       </div>
       <span class="eyebrow">Privacy Policy</span>
       <h1>How Zestine handles your data.</h1>
