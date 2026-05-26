@@ -77,15 +77,34 @@ a:hover{color:var(--lime-400);border-bottom-color:var(--lime-400);}
 }
 
 /* ─── Main ─── */
-.main{margin-left:280px;padding:48px 60px 100px;max-width:1040px;}
+/* No fixed max-width: the content area flexes to fill everything right of
+   the sidebar so the page feels full-bleed on wide monitors. Individual text
+   blocks below use .content-stack to keep paragraph line length readable. */
+.main{
+  margin-left:280px;
+  padding:48px 64px 100px;
+  min-height:100vh;
+}
+.content-stack{max-width:980px;margin:0 auto;}
+.content-stack > p,
+.content-stack > ul,
+.content-stack > ol,
+.content-stack > .gdpr,
+.content-stack > .facts,
+.content-stack > .tagged-list,
+.content-stack > h2,
+.content-stack > h3{max-width:none;}
 
-/* Hero — big black header with the full ZestineTech logo lockup centred */
+/* Hero — big black header with the full ZestineTech logo lockup centred.
+   Spans the full content-area width above the constrained reading column,
+   so the brand plate occupies the whole top band of the page. */
 .hero{
   background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 50%,var(--black) 100%);
   border:1px solid var(--line);
   border-radius:24px;
-  padding:64px 56px;
-  margin-bottom:52px;
+  padding:72px 64px;
+  margin:0 auto 56px;
+  max-width:1360px;
   position:relative;
   overflow:hidden;
   text-align:center;
@@ -215,10 +234,11 @@ strong{color:#fff;font-weight:700;}
 @media (max-width:900px){
   .sidebar{position:relative;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line);}
   .main{margin-left:0;padding:28px 22px;}
-  .hero{padding:40px 24px;}
+  .hero{padding:40px 24px;margin:0 0 32px;}
   .hero-logo{margin-bottom:24px;}
   .hero-logo .brand-lockup-lg{max-width:88%;}
   .hero h1{font-size:26px;}
+  .content-stack{max-width:100%;}
   .facts dl{grid-template-columns:1fr;}
   .facts dt{margin-top:4px;}
 }
@@ -273,6 +293,8 @@ strong{color:#fff;font-weight:700;}
       </div>
     </div>
   </section>
+
+  <div class="content-stack">
 
   <p class="lead">Zestine is a U.S.-based technology company provides services for Engineering organizations. Our Services replace fragmented, manual workflows with intelligent, guided operational systems designed for precision and scale. By using our Services, you acknowledge and agree to the terms described in this Policy.</p>
 
@@ -385,6 +407,8 @@ strong{color:#fff;font-weight:700;}
       <a href="mailto:support@zestinetech.com">support@zestinetech.com</a>
     </div>
   </div>
+
+  </div><!-- /.content-stack -->
 
 </main>
 
