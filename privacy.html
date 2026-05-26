@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zestine Technologies — Privacy Policy</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ──────────────────────────────────────────────────────────────────────
-   Electric Lime palette (ZestineTech brand)
+   Black + Electric Lime — ZestineTech brand
    GREEN 500 #B7FF3C · GREEN 400 #C9FF66 · GREEN 300 #DBFF99
    GREEN 200 #ECFFCC · GREEN 100 #F5FFE5
+   BLACK   #000000 · INK   #0a0a0a · INK-2 #111111 · LINE #1f2937
    ────────────────────────────────────────────────────────────────────── */
 :root{
   --lime-500:#B7FF3C;
@@ -17,80 +18,205 @@
   --lime-300:#DBFF99;
   --lime-200:#ECFFCC;
   --lime-100:#F5FFE5;
-  --ink:#0f172a;
-  --ink-2:#1e293b;
-  --muted:#475569;
-  --muted-2:#64748b;
-  --border:#e2e8f0;
-  --bg:#f8fafc;
+  --black:#000000;
+  --ink:#0a0a0a;
+  --ink-2:#111111;
+  --ink-3:#171717;
+  --line:#1f2937;
+  --line-2:#262626;
+  --text:#e5e7eb;
+  --text-2:#cbd5e1;
+  --muted:#9ca3af;
+  --muted-2:#6b7280;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink-2);line-height:1.7;}
-a{color:#3a7d00;text-decoration:none;}
-a:hover{text-decoration:underline;}
+html,body{scroll-behavior:smooth;background:var(--black);}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--black);
+  color:var(--text);
+  line-height:1.7;
+  min-height:100vh;
+}
+a{color:var(--lime-500);text-decoration:none;border-bottom:1px dotted rgba(183,255,60,0.4);}
+a:hover{color:var(--lime-400);border-bottom-color:var(--lime-400);}
 
-/* Sidebar */
-.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:#0f172a;color:#fff;overflow-y:auto;z-index:100;padding:24px 0;}
-.sidebar::-webkit-scrollbar{width:4px;}
-.sidebar::-webkit-scrollbar-thumb{background:rgba(183,255,60,0.35);border-radius:4px;}
-.sidebar-brand{padding:0 24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:12px;}
-.sidebar-brand .logo-mark{width:36px;height:36px;background:var(--lime-500);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#0f172a;font-weight:800;font-size:18px;letter-spacing:-1px;}
-.sidebar-brand .brand-text h2{font-size:16px;font-weight:800;letter-spacing:-0.3px;}
-.sidebar-brand .brand-text p{font-size:11px;opacity:0.6;margin-top:1px;}
+/* ─── Sidebar ─── */
+.sidebar{
+  position:fixed;top:0;left:0;width:280px;height:100vh;
+  background:var(--ink);
+  border-right:1px solid var(--line);
+  overflow-y:auto;z-index:100;padding:24px 0;
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(183,255,60,0.25);border-radius:6px;}
+
+.sidebar-brand{padding:0 22px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;}
+.sidebar-brand svg{flex-shrink:0;}
+.sidebar-brand .brand-text h2{font-size:17px;font-weight:800;letter-spacing:-0.4px;color:#fff;}
+.sidebar-brand .brand-text p{font-size:10.5px;color:var(--muted);margin-top:2px;letter-spacing:0.3px;}
+
 .nav-group{padding:16px 0;}
-.nav-group-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.4);padding:0 24px;margin-bottom:8px;}
-.nav-link{display:block;padding:8px 24px;font-size:13px;color:rgba(255,255,255,0.7);transition:all .15s;cursor:pointer;border-left:3px solid transparent;}
-.nav-link:hover{background:rgba(183,255,60,0.08);color:#fff;text-decoration:none;border-left-color:rgba(183,255,60,0.4);}
-.nav-link.active{background:rgba(183,255,60,0.15);color:#fff;border-left-color:var(--lime-500);font-weight:600;}
+.nav-group-title{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--muted-2);padding:0 24px;margin-bottom:8px;
+}
+.nav-link{
+  display:block;padding:8px 24px;font-size:13px;
+  color:var(--text-2);transition:all .15s;cursor:pointer;
+  border-left:3px solid transparent;border-bottom:none;
+}
+.nav-link:hover{
+  background:rgba(183,255,60,0.06);color:#fff;
+  border-left-color:rgba(183,255,60,0.5);text-decoration:none;
+}
+.nav-link.active{
+  background:rgba(183,255,60,0.12);color:var(--lime-500);
+  border-left-color:var(--lime-500);font-weight:600;
+}
 
-/* Main */
-.main{margin-left:280px;padding:40px 60px 80px;max-width:980px;}
-.hero{background:linear-gradient(135deg,#0f172a 0%,#1e293b 60%, #0f172a 100%);position:relative;color:#fff;border-radius:20px;padding:48px;margin-bottom:40px;overflow:hidden;}
-.hero::before{content:"";position:absolute;top:-40px;right:-40px;width:220px;height:220px;background:radial-gradient(circle,var(--lime-500) 0%,transparent 70%);opacity:0.35;}
-.hero::after{content:"";position:absolute;bottom:-60px;left:-30px;width:180px;height:180px;background:radial-gradient(circle,var(--lime-400) 0%,transparent 70%);opacity:0.2;}
+/* ─── Main ─── */
+.main{margin-left:280px;padding:48px 60px 100px;max-width:1040px;}
+
+/* Hero — big black header with the full ZestineTech logo lockup centred */
+.hero{
+  background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 50%,var(--black) 100%);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:64px 56px;
+  margin-bottom:52px;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+}
+.hero::before{
+  content:"";position:absolute;top:-100px;right:-100px;width:380px;height:380px;
+  background:radial-gradient(circle,var(--lime-500) 0%,transparent 60%);
+  opacity:0.18;pointer-events:none;
+}
+.hero::after{
+  content:"";position:absolute;bottom:-80px;left:-80px;width:280px;height:280px;
+  background:radial-gradient(circle,var(--lime-400) 0%,transparent 60%);
+  opacity:0.12;pointer-events:none;
+}
 .hero-inner{position:relative;z-index:1;}
-.hero .eyebrow{display:inline-block;background:var(--lime-500);color:#0f172a;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;}
-.hero h1{font-size:36px;font-weight:800;margin-bottom:10px;letter-spacing:-0.8px;}
-.hero p{font-size:15px;opacity:0.85;max-width:680px;}
-.hero-meta{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;font-size:12px;}
-.hero-meta span{background:rgba(255,255,255,0.1);padding:5px 12px;border-radius:20px;}
 
-h2{font-size:22px;font-weight:800;color:var(--ink);margin:48px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--lime-300);display:flex;align-items:center;gap:12px;}
-h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--lime-500);color:#0f172a;border-radius:8px;font-size:14px;}
+.hero-logo{display:flex;align-items:center;justify-content:center;gap:22px;margin-bottom:32px;}
+.hero-logo .word{
+  font-weight:800;font-size:54px;letter-spacing:-1.5px;color:#fff;
+  font-family:'Inter',sans-serif;line-height:1;
+}
+
+.eyebrow{
+  display:inline-block;background:var(--lime-500);color:var(--black);
+  font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:6px 14px;border-radius:20px;margin-bottom:18px;
+}
+.hero h1{
+  font-size:38px;font-weight:800;margin-bottom:14px;
+  letter-spacing:-0.8px;color:#fff;
+}
+.hero p{font-size:15px;color:var(--text-2);max-width:760px;margin:0 auto;}
+.hero-meta{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center;font-size:12px;}
+.hero-meta span{
+  background:rgba(255,255,255,0.06);border:1px solid var(--line);
+  padding:6px 13px;border-radius:20px;color:var(--text-2);
+}
+.hero-meta span strong{color:var(--lime-500);font-weight:700;}
+
+/* ─── Typography ─── */
+h2{
+  font-size:24px;font-weight:800;color:#fff;
+  margin:56px 0 18px;padding-bottom:14px;
+  border-bottom:2px solid var(--line);
+  display:flex;align-items:center;gap:14px;
+}
+h2 .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;background:var(--lime-500);color:var(--black);
+  border-radius:10px;font-size:16px;font-weight:800;
+  box-shadow:0 0 0 4px rgba(183,255,60,0.12);
+}
 h2:first-of-type{margin-top:0;}
-h3{font-size:16px;font-weight:700;color:var(--ink-2);margin:22px 0 8px;}
-p,li{font-size:14px;color:var(--muted);}
-p{margin-bottom:12px;}
-ul,ol{padding-left:22px;margin:8px 0 16px;}
+h3{font-size:16px;font-weight:700;color:#fff;margin:24px 0 8px;}
+
+p,li{font-size:14px;color:var(--text-2);}
+p{margin-bottom:14px;}
+ul,ol{padding-left:22px;margin:8px 0 18px;}
 li{margin-bottom:6px;}
-strong{color:var(--ink);}
-.lead{font-size:15px;color:var(--ink-2);}
+li::marker{color:var(--lime-500);}
+strong{color:#fff;font-weight:700;}
+.lead{font-size:15.5px;color:var(--text);}
 
-/* GDPR call-out boxes (lime accent) */
-.gdpr{background:var(--lime-100);border-left:4px solid var(--lime-500);border-radius:8px;padding:12px 16px;margin:14px 0 18px;font-size:13px;color:#3a4d18;}
-.gdpr strong{color:#1f2e08;}
+/* GDPR call-out boxes (lime accent on near-black) */
+.gdpr{
+  background:linear-gradient(90deg,rgba(183,255,60,0.06) 0%,rgba(183,255,60,0.02) 100%);
+  border:1px solid var(--line);
+  border-left:4px solid var(--lime-500);
+  border-radius:10px;
+  padding:14px 18px;
+  margin:16px 0 20px;
+  font-size:13px;
+  color:var(--text-2);
+}
+.gdpr strong{color:var(--lime-300);}
 
-/* Definition rows for contact / company info */
-.facts{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin:14px 0 22px;}
-.facts dl{display:grid;grid-template-columns:200px 1fr;gap:10px 24px;}
-.facts dt{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted-2);letter-spacing:0.5px;align-self:center;}
-.facts dd{font-size:14px;color:var(--ink-2);}
+/* Facts card (company / contact info) */
+.facts{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px 26px;
+  margin:18px 0 26px;
+}
+.facts dl{display:grid;grid-template-columns:210px 1fr;gap:12px 28px;}
+.facts dt{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;
+  color:var(--lime-500);letter-spacing:0.8px;align-self:center;
+}
+.facts dd{font-size:14px;color:var(--text);}
+.facts a{color:var(--lime-400);}
 
-/* List-with-titles for collected data */
+/* Tagged-list cards for the four data categories */
 .tagged-list{list-style:none;padding:0;}
-.tagged-list li{background:#fff;border:1px solid var(--border);border-left:4px solid var(--lime-400);border-radius:10px;padding:14px 18px;margin-bottom:10px;}
-.tagged-list li strong{display:block;color:var(--ink);margin-bottom:4px;font-size:14px;}
+.tagged-list li{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-left:4px solid var(--lime-500);
+  border-radius:10px;
+  padding:16px 20px;
+  margin-bottom:12px;
+}
+.tagged-list li strong{
+  display:block;color:var(--lime-300);margin-bottom:6px;
+  font-size:14px;font-weight:700;letter-spacing:0.2px;
+}
+.tagged-list li{color:var(--text-2);}
 
 /* Footer */
-.footer{margin-top:60px;padding-top:30px;border-top:1px solid var(--border);color:var(--muted-2);font-size:12px;text-align:center;}
-.footer .lime-bar{display:inline-block;width:60px;height:4px;background:var(--lime-500);border-radius:4px;margin-bottom:14px;}
+.footer{
+  margin-top:70px;padding-top:34px;
+  border-top:1px solid var(--line);
+  color:var(--muted);font-size:12px;text-align:center;
+}
+.footer .lime-bar{
+  display:inline-block;width:80px;height:4px;
+  background:var(--lime-500);border-radius:4px;margin-bottom:18px;
+  box-shadow:0 0 16px rgba(183,255,60,0.4);
+}
+.footer p{color:var(--muted);}
+.footer .links{margin-top:10px;}
+.footer .links a{color:var(--muted);margin:0 12px;border-bottom-color:transparent;}
+.footer .links a:hover{color:var(--lime-500);}
 
 /* Mobile */
 @media (max-width:900px){
-  .sidebar{position:relative;width:100%;height:auto;}
-  .main{margin-left:0;padding:24px;}
-  .hero{padding:30px 24px;}
+  .sidebar{position:relative;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line);}
+  .main{margin-left:0;padding:28px 22px;}
+  .hero{padding:40px 24px;}
+  .hero-logo{gap:14px;margin-bottom:24px;}
+  .hero-logo .word{font-size:34px;}
+  .hero-logo svg{width:54px;height:54px;}
   .hero h1{font-size:26px;}
   .facts dl{grid-template-columns:1fr;}
   .facts dt{margin-top:4px;}
@@ -99,10 +225,20 @@ strong{color:var(--ink);}
 </head>
 <body>
 
+<!-- ─────────── Reusable inline ZestineTech mark (lime "N" silhouette) ─────────── -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="zt-mark" viewBox="0 0 100 100">
+      <!-- Geometric "N" formed by two interlocking shapes -->
+      <path d="M10 8 L40 8 L40 50 L72 8 L92 8 L92 92 L62 92 L62 50 L30 92 L10 92 Z" fill="#B7FF3C"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- ─────────── Sidebar ─────────── -->
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <div class="logo-mark">N</div>
+    <svg width="40" height="40"><use href="#zt-mark"/></svg>
     <div class="brand-text">
       <h2>ZestineTech</h2>
       <p>Intelligent engineering operations</p>
@@ -127,19 +263,23 @@ strong{color:var(--ink);}
   </nav>
 </aside>
 
-<!-- ─────────── Main content ─────────── -->
+<!-- ─────────── Main ─────────── -->
 <main class="main">
 
-  <!-- Hero -->
+  <!-- Hero with full logo lockup -->
   <section class="hero" id="overview">
     <div class="hero-inner">
+      <div class="hero-logo">
+        <svg width="78" height="78"><use href="#zt-mark"/></svg>
+        <span class="word">ZestineTech</span>
+      </div>
       <span class="eyebrow">Privacy Policy</span>
       <h1>How Zestine handles your data.</h1>
-      <p>This Privacy Policy (“Policy”) governs how Zestine Technologies, Inc. (“Zestine,” “we,” “us,” or “our”) collects, uses, discloses, retains, and protects personal information obtained from individuals and organizations that access or use our website at <a href="https://www.zestinetech.com/" style="color:var(--lime-300);">https://www.zestinetech.com/</a>, our intelligent engineering platforms, software applications, APIs, and related services (collectively, the “Services”).</p>
+      <p>This Privacy Policy (“Policy”) governs how Zestine Technologies, Inc. (“Zestine,” “we,” “us,” or “our”) collects, uses, discloses, retains, and protects personal information obtained from individuals and organizations that access or use our website at <a href="https://www.zestinetech.com/">https://www.zestinetech.com/</a>, our intelligent engineering platforms, software applications, APIs, and related services (collectively, the “Services”).</p>
       <div class="hero-meta">
-        <span>Effective: 2026</span>
-        <span>Governs: Zestine Services &amp; Platforms</span>
-        <span>Region: Global</span>
+        <span><strong>Effective</strong> · 2026</span>
+        <span><strong>Governs</strong> · Zestine Services &amp; Platforms</span>
+        <span><strong>Region</strong> · Global</span>
       </div>
     </div>
   </section>
@@ -152,7 +292,7 @@ strong{color:var(--ink);}
 
   <p>For GDPR Clauses mentioned &amp; referring in privacy policy document, please refer our Data Processing Agreement and respective Appendix A – processing details, Appendix B — Technical and Organisational Security Measures, Appendix C — Authorised Subprocessors and Appendix D — Standard Contractual Clauses (SCCs) for better understanding of the policy.</p>
 
-  <!-- ─────── 1 ─────── -->
+  <!-- ─── 1 ─── -->
   <h2 id="section-1"><span class="num">1</span>Scope and Applicability</h2>
   <p>This Policy applies to:</p>
   <ul>
@@ -165,7 +305,7 @@ strong{color:var(--ink);}
   </ul>
   <p>This Policy does not apply to third-party products, services, or websites that may be linked from within the Services. We encourage you to review the privacy policies of those third parties independently.</p>
 
-  <!-- ─────── 2 ─────── -->
+  <!-- ─── 2 ─── -->
   <h2 id="section-2"><span class="num">2</span>Data Governance and Compliance</h2>
   <p>Zestine Technologies, Inc. acts as the Data Controller for personal and technical information collected through our Services and is committed to maintaining data privacy and protection practices in alignment with applicable compliance standards, including GDPR, CCPA, and PIPEDA requirements where applicable.</p>
 
@@ -178,7 +318,7 @@ strong{color:var(--ink);}
     </dl>
   </div>
 
-  <!-- ─────── 3 ─────── -->
+  <!-- ─── 3 ─── -->
   <h2 id="section-3"><span class="num">3</span>Personal &amp; Technical Information We Collect</h2>
   <p>We collect limited personal, technical, operational, and usage information depending on how you interact with our Services / System, including:</p>
 
@@ -205,7 +345,7 @@ strong{color:var(--ink);}
 
   <div class="gdpr"><strong>GDPR Art. 5(1)(e):</strong> Personal data shall be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed (storage limitation).</div>
 
-  <!-- ─────── 4 ─────── -->
+  <!-- ─── 4 ─── -->
   <h2 id="section-4"><span class="num">4</span>Artificial Intelligence usage in our interface</h2>
   <p>Zestine uses Ze AI, an AI-powered assistance system built on OpenAI technology. Ze AI may process user requests through OpenAI services in accordance with the applicable OpenAI Privacy Policy.</p>
   <p>Ze AI is trained to assist engineering teams with product-related queries, technical guidance, operational support, and industry best practices related to Zestine products and services.</p>
@@ -216,25 +356,25 @@ strong{color:var(--ink);}
   <p>Screenshots, images, raw project files, engineering drawings, BIM models, proprietary datasets, and client-specific design information are not intentionally retained, curated, or used beyond the scope required to provide the requested response or support.</p>
   <p>Zestine follows responsible and privacy-conscious AI practices. Any data processed through Ze AI is handled using anonymization or pseudonymization practices where applicable.</p>
 
-  <!-- ─────── 5 ─────── -->
+  <!-- ─── 5 ─── -->
   <h2 id="section-5"><span class="num">5</span>Your Privacy Rights</h2>
   <div class="gdpr"><strong>GDPR Art. 33:</strong> The processor shall notify the controller without undue delay after becoming aware of a personal data breach. The controller must notify the supervisory authority within 72 hours of becoming aware.</div>
   <div class="gdpr"><strong>GDPR Art. 34:</strong> Where a breach is likely to result in a high risk to the rights and freedoms of natural persons, the controller shall communicate the breach to the data subject without undue delay.</div>
   <p>You may request access, correction, deletion, restriction, or portability of your personal information, subject to applicable laws and operational requirements. You may also withdraw consent or object to certain types of data processing, including marketing communications, at any time.</p>
   <p>To exercise your privacy rights or request human review of significant AI-generated outputs, contact: <a href="mailto:support@zestinetech.com">support@zestinetech.com</a>. Zestine will respond to verified requests within the timeframe required by applicable law.</p>
 
-  <!-- ─────── 6 ─────── -->
+  <!-- ─── 6 ─── -->
   <h2 id="section-6"><span class="num">6</span>Cookies and Tracking Technologies</h2>
   <p>Zestine uses cookies and similar technologies to maintain platform functionality, improve user experience, analyze usage, and support platform performance. These may include necessary, functional, analytics, and consent-based marketing cookies.</p>
   <p>We may use third-party analytics and monitoring services, including Google Analytics and Microsoft Clarity, to understand platform usage, diagnose technical issues, and improve our Services.</p>
   <div class="gdpr"><strong>GDPR Arts. 44–49:</strong> Any transfer of personal data to a third country or international organisation may only take place if adequate protections are in place, including adequacy decisions, Standard Contractual Clauses (SCCs), or Binding Corporate Rules.</div>
   <p>Users may manage or disable cookies through browser settings or our cookie consent preferences where applicable. Disabling certain cookies may affect some platform features or functionality.</p>
 
-  <!-- ─────── 7 ─────── -->
+  <!-- ─── 7 ─── -->
   <h2 id="section-7"><span class="num">7</span>Updates to This Privacy Policy</h2>
   <p>Zestine may update this Privacy Policy periodically to reflect changes in our Services, operational practices, or legal requirements. Material updates may be communicated through our website, email notifications, or in-platform notices. Continued use of the Services after such updates constitutes acceptance of the revised Policy.</p>
 
-  <!-- ─────── 8 ─────── -->
+  <!-- ─── 8 ─── -->
   <h2 id="section-8"><span class="num">8</span>Contact Us</h2>
   <p>Zestine shall notify the Controller without undue delay, and in any event within 48 hours of becoming aware of a confirmed or reasonably suspected Personal Data Breach, to enable the Controller to meet the 72-hour notification deadline to the Supervisory Authority under GDPR Art. 33.</p>
   <p>For questions, concerns, or privacy-related requests, please contact:</p>
@@ -250,19 +390,23 @@ strong{color:var(--ink);}
   <div class="footer">
     <div class="lime-bar"></div>
     <p>&copy; 2026 Zestine Technologies, Inc. All rights reserved.</p>
+    <div class="links">
+      <a href="https://www.zestinetech.com/" target="_blank" rel="noopener">zestinetech.com</a>
+      <a href="mailto:support@zestinetech.com">support@zestinetech.com</a>
+    </div>
   </div>
 
 </main>
 
 <script>
-  // Highlight active nav-link based on scroll position.
+  // Scroll-spy for sidebar nav-links.
   const links = document.querySelectorAll('.nav-link[href^="#"]');
   const sections = Array.from(links).map(l => {
     const id = l.getAttribute('href').slice(1);
     return { id, el: document.getElementById(id), link: l };
   }).filter(x => x.el);
   function onScroll(){
-    const y = window.scrollY + 120;
+    const y = window.scrollY + 140;
     let active = sections[0];
     for (const s of sections) if (s.el.offsetTop <= y) active = s;
     links.forEach(l => l.classList.remove('active'));
